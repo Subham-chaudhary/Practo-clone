@@ -179,7 +179,7 @@ const Banner = () => {
                 height={45}
               />
             </a>
-            <a href="#"  rel="noopener noreferrer">
+            <a href="#" rel="noopener noreferrer">
               <Image
                 src="/appstore.png"
                 alt="Download on the App Store"
@@ -191,7 +191,7 @@ const Banner = () => {
         </div>
         <div className="relative w-[300px] h-[360px] md:w-[400px] md:h-[480px]">
           <Image
-            src="/app.png" 
+            src="/app.png"
             alt="App Preview"
             layout="fill"
             objectFit="contain"

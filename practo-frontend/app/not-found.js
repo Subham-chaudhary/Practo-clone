@@ -2,8 +2,7 @@ import Link from 'next/link';
 import Header from "./components/Header";
 
 export default function NotFound() {
-    return (<>
-        <Header />
+    return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
             <div className="text-blue-500 font-bold text-9xl">404</div>
             <div className="text-6xl font-medium">:( </div>
@@ -39,6 +38,6 @@ export default function NotFound() {
                 </div>
             </div>
         </div>
-    </>
+
     );
 }

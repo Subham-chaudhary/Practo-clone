@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FiMapPin, FiSearch, FiCompass, FiMap } from "react-icons/fi";
 import Downarrow from "./downarrow";
 import { FiMessageSquare, FiTablet, FiBriefcase, FiFileText, FiPlusCircle, FiBook } from "react-icons/fi";
@@ -7,36 +8,82 @@ import { FiMessageSquare, FiTablet, FiBriefcase, FiFileText, FiPlusCircle, FiBoo
 const Search = () => {
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isDoctorOpen, setIsDoctorOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState({
+    "suggestion": "Bangalore",
+    "weight": 100000,
+    "category": "city",
+    "display_name": "CITY",
+    "display_name_original": "CITY",
+    "key": "Bangalore",
+    "original": "bangalore",
+    "city_live": "true",
+    "country": "India",
+    "city_slug": "bangalore",
+    "country_slug": "india",
+    "score": 661.75824,
+    "problem_area_ids": []
+  });
+  const [selectedDoctor, setSelectedDoctor] = useState({});
+  const [isLocationSelected, setLocationSelected] = useState(true);
+  const [isDoctorSelected, setDoctorSelected] = useState(false);
+  const [commonSpecialists, setCommonSpecialists] = useState([]);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const router = useRouter();
 
-  const locations = [
-    "Jp Nagar",
-    "Whitefield",
-    "HSR Layout",
-    "Indiranagar",
-    "Malleshwaram",
-    "Sarjapur Road",
-    "Bannerghatta Road",
-    "Rajajinagar",
-    "Jayanagar",
-    "Electronic City",
-  ];
+  useEffect(() => {
+    if (isLocationSelected && isDoctorSelected) {
+      const params = new URLSearchParams({ city: selectedLocation.original, query: selectedDoctor.original, page: 1 });
+      router.push(`/search/doctors?${params}`);
+    }
+  }, [isLocationSelected, isDoctorSelected]);
 
   const popularSearches = [
     "Hysterectomy",
     "Normal Delivery",
   ];
 
-  const commonSpecialists = [
-    "Dentist",
-    "Gynecologist/ OBGYN",
-    "General Physician",
-    "Orthopedist",
-    "Pediatrician",
-    "Dermatologist",
-    "Ear-Nose-Throat (ENT)",
-    "Homeopath",
-    "Ayurveda",
-  ];
+  //   const locationSuggestions = [
+  //     {
+  //         "suggestion": "Jp Nagar",
+  //         "original": "Jp Nagar",
+  //         "display_name": "LOCALITY",
+  //         "category": "locality",
+  //         "problem_area_ids": [],
+  //         "city": "bangalore",
+  //         "city_slug": "bangalore",
+  //         "locality": "Jp Nagar",
+  //         "locality_slug": "jp-nagar"
+  //     }
+  // ];
+
+  useEffect(() => {
+    const specialitySuggestions = async () => {
+      const params = new URLSearchParams({ city: selectedLocation.original, query: "keyword" });
+      const res = await fetch(`http://localhost:8080/api/suggestions?${params}`);
+      const data = await res.json();
+      setCommonSpecialists(data);
+    };
+    if (isDoctorOpen && commonSpecialists.length == 0) {
+      specialitySuggestions();
+    }
+
+    const localitySuggestions = async () => {
+      const params = new URLSearchParams({ city: selectedLocation.city_slug, query: "locality" });
+      const res = await fetch(`http://localhost:8080/api/suggestions?${params}`);
+      const data = await res.json();
+      setLocationSuggestions(data);
+    };
+    if (isLocationOpen && isLocationSelected) {
+      localitySuggestions();
+    }
+  }, [isLocationOpen, isDoctorOpen, isLocationSelected]);
+
+  const getAutoSuggestions = async (query) => {
+    const params = new URLSearchParams({ q: query });
+    const res = await fetch(`http://localhost:8080/api/autocomplete?${params}`);
+    const data = await res.json();
+    setLocationSuggestions(data);
+  };
 
   return (
     <>
@@ -45,75 +92,100 @@ const Search = () => {
           <h1 className="text-4xl font-bold mb-4">Your home for health</h1>
           <p className="text-2xl font-bold mb-6">Find and Book</p>
           <div className="md:flex-row items-center justify-center space-x-1 flex-col space-y-4 md:space-y-0 flex ">
-            <div className="relative md:w-1/5 w-full">
+            <div className="relative md:w-1/4 w-full">
               <div className="flex items-center bg-white ">
                 <FiMapPin className="text-gray-400 mx-2" />
                 <input
+                  id="location_input"
+                  name="location"
                   type="text"
-                  placeholder="Search location"
+                  placeholder={selectedLocation.suggestion}
                   className="w-full p-3 bg-transparent text-gray-700 focus:outline-none"
-                  onFocus={() => setIsLocationOpen(true)}
-                  onBlur={() => setTimeout(() => setIsLocationOpen(false), 100)}
+                  onFocus={(e) => {
+                    setIsLocationOpen(true);
+                    e.target.select();
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value.trim().length > 2) {
+                      getAutoSuggestions(e.target.value);
+                    }
+                    setLocationSelected(false);
+                  }}
+                  onBlur={() => setIsLocationOpen(false)}
                 />
               </div>
               {isLocationOpen && (
-                <div className="absolute z-10 mt-1 pt-2 bg-white w-full shadow-lg text-md text-gray-700">
+                <div className="absolute z-10 px-1 mt-1 pt-2 bg-white w-full shadow-lg text-sm text-gray-700">
                   <ul>
-                    <a className="px-2 py-2 cursor-pointer text-blue-500 underline flex items-center justify-start gap-2">
+                    <a className="px-2 py-2 cursor-pointer text-blue-500 underline flex items-center justify-start gap-2"
+                      onMouseDown={() => {
+                        alert("Feature Not available")
+                      }}>
                       <FiCompass /> Use my location
                     </a>
-                    <a className="px-2 py-2 cursor-pointer text-blue-500 underline flex items-center justify-start gap-2">
-                      <FiMap /> Search Bangalore
+                    <a className="px-2 py-2 cursor-pointer text-blue-500 underline flex  justify-start gap-2" onMouseDown={() => {
+                      alert("Feature Not available")
+                    }}>
+                      <FiMap /> Search {selectedLocation.suggestion}
                     </a>
-                    {locations.map((location) => (
-                      <li
-                        key={location}
-                        className="px-2 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-start gap-2"
-                      > <FiSearch className="text-gray-400 mx-2" />
-                        {location}
-                        <p className="text-xs text-gray-500">Banglore</p>
-                      </li>
+                    {locationSuggestions.map((item, index) => (
+                      <div
+                        key={index}
+                        className="py-2 cursor-pointer hover:bg-gray-100 flex items-center border-b-1 border-gray-200 justify-between"
+                        onMouseDown={() => {
+                          setSelectedLocation(item);
+                          setLocationSelected(true);
+                          document.getElementById("location_input").value = item.suggestion;
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <FiSearch className="text-gray-400 mx-2" />
+                          {item.suggestion}
+                        </div>
+                        <p className="text-xs text-gray-500 align-self-end">{item.display_name}</p>
+                      </div>
                     ))}
                   </ul>
                 </div>
               )}
             </div>
-            <div className="relative md:w-2/6 w-full">
+            <div className="relative md:w-2/5 w-full">
               <div className="flex items-center bg-white ">
                 <FiSearch className="text-gray-400 mx-2" />
                 <input
+                  id="doctor_input"
+                  name="doctor"
                   type="text"
-                  placeholder="Search doctors, clinics, hospitals, etc."
+                  placeholder={selectedDoctor?.suggestion || "Search doctors, clinics, hospitals, etc."}
                   className="w-full p-3 bg-transparent text-gray-700 focus:outline-none"
-                  onFocus={() => setIsDoctorOpen(true)}
-                  onBlur={() => setTimeout(() => setIsDoctorOpen(false), 100)}
+                  onFocus={(e) => {
+                    setIsDoctorOpen(true);
+                    e.target.select();
+                  }}
+                  onBlur={() => setIsDoctorOpen(false)}
                 />
               </div>
               {isDoctorOpen && (
                 <div className="absolute z-10 mt-1 w-full bg-white text-sm  shadow-lg text-gray-700">
                   <div className="p-0">
                     <h3 className="text-xs bg-gray-300 py-1 text-left p-2">Popular Searches</h3>
-                    <ul className="p-2 grid grid-cols-2">
-                      {popularSearches.map((search) => (
-                        <li
-                          key={search}
-                          className="py-1 ml-2 rounded-xl  cursor-pointer bg-gray-200"
-                        >
-                          {search}
-                        </li>
-                      ))}
-                    </ul>
-                    <h3 className="text-xs bg-gray-300 py-1 text-left p-2">Common Specialists</h3>
                     <div className="p-2">
-                      {commonSpecialists.map((specialist) => (
-
+                      {commonSpecialists.map((item) => (
                         <div
-                          key={specialist}
+                          key={item.original}
                           className="py-2 cursor-pointer hover:bg-gray-100 flex items-center border-b-1 border-gray-200 justify-between"
-                        > <div className="flex items-center">
+                          onMouseDown={() => {
+                            setSelectedDoctor(item);
+                            setDoctorSelected(true);
+                            document.getElementById("doctor_input").value = item.suggestion;
+                        
+                          }}
+                        >
+                          <div className="flex items-center">
                             <FiSearch className="text-gray-400 mx-2" />
-                            {specialist}</div>
-                          <p className="text-xs text-gray-500 align-self-end">SPECIALITY</p>
+                            {item.suggestion}
+                          </div>
+                          <p className="text-xs text-gray-500 align-self-end">{item.display_name}</p>
                         </div>
                       ))}
 
@@ -167,7 +239,7 @@ const Search = () => {
         </a>
 
         <a href="/healthcare-providers" className="flex-col flex items-center">
-          <FiBriefcase  className="text-3xl sm:text-2xl"/>
+          <FiBriefcase className="text-3xl sm:text-2xl" />
           <span className="hidden md:block">For healthcare providers</span>
         </a>
       </div>

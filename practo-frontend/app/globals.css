@@ -1,5 +1,6 @@
 @import "tailwindcss";
-html{
+
+html {
   scroll-behavior: smooth;
 }
 
@@ -7,6 +8,7 @@ html{
   --background: #ffffff;
   --foreground: #171717;
 }
+
 
 @theme inline {
   --color-background: var(--background);
@@ -47,6 +49,7 @@ body {
   min-height: 440px;
   background-repeat: no-repeat;
   max-height: 40vh;
+  animation: fadeInAnimation 0.7s ease-in forwards;
 
 }
 
@@ -54,5 +57,33 @@ body {
   .search-bg {
     background-size: contain;
   }
-  
+
+}
+
+
+/* .fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+} */
+
+body {
+  animation: fadeInAnimation 0.3s ease-in forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% { filter: blur(10px); }
+  100% { filter: blur(0px); }
 }
