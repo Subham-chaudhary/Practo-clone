@@ -105,7 +105,7 @@ The backend server provides the following API endpoints:
 
 ## Live Demo
 
-A live demo of the application is available here: [https://practo-clone.vercel.app](https://practo-clone.vercel.app/).
+A live demo of the application is available here: [https://practo-clone-ui.onrender.com](https://practo-clone-ui.onrender.com/).
 
 ## Api Endpoints
 *   [https://practo-clone-9wxf.onrender.com/api/autocomplete?q=delhi](https://practo-clone-9wxf.onrender.com/api/autocomplete?q=delhi)

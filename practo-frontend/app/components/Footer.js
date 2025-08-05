@@ -36,7 +36,7 @@ const Footer = () => {
               />
             ))}
           </div>
-          <div className="text-center flex flex-col items-center  mt-8 border-t border-gray-700 pt-4 bg-gray-200 text-gray-800">
+          <div className="text-center flex flex-col items-center  mt-8 p-2 pt-4 bg-gray-200 text-gray-800">
             <div className="flex left-0  ">
               <Image
                 className="h-20 w-auto"
@@ -47,7 +47,7 @@ const Footer = () => {
                 style={{ filter: "brightness(1.2)", mixBlendMode: "multiply" }}
               />
             </div>
-            <p>&copy; 2025 Practo Clone. By Subham Chaudhary.</p>
+            <p>&copy; 2025 Practo Clone. By Subham Chaudhary.</p> <a href="https://github.com/Subham-chaudhary" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:bg-blue-500 border-3 border-blue-500 px-3 py-1 rounded-full text-blue-500"> Check out theGithub repo</a>
           </div>
         </div>
       </footer>

@@ -94,7 +94,7 @@ const Banner = () => {
         <div className="flex justify-center md:justify-center">
           <video
             className="p-auto mx-auto"
-            poster="/book-preview.png"
+            poster="/app-preview.jpg"
             width="250"
             height="480"
             autoPlay

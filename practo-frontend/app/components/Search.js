@@ -74,7 +74,7 @@ const Search = () => {
   useEffect(() => {
     const specialitySuggestions = async () => {
       const params = new URLSearchParams({ city: selectedLocation.original, query: "keyword" });
-      const res = await fetch(`http://localhost:8080/api/suggestions?${params}`);
+      const res = await fetch(`https://practo-clone-9wxf.onrender.com/api/suggestions?${params}`);
       const data = await res.json();
       setCommonSpecialists(data);
     };
@@ -84,18 +84,18 @@ const Search = () => {
 
     const localitySuggestions = async () => {
       const params = new URLSearchParams({ city: selectedLocation.city_slug, query: "locality" });
-      const res = await fetch(`http://localhost:8080/api/suggestions?${params}`);
+      const res = await fetch(`https://practo-clone-9wxf.onrender.com/api/suggestions?${params}`);
       const data = await res.json();
       setLocationSuggestions(data);
     };
     if (isLocationOpen && isLocationSelected) {
       localitySuggestions();
     }
-  }, [isLocationOpen, isDoctorOpen, isLocationSelected]);
+  }, [isLocationOpen, isDoctorOpen, isLocationSelected, commonSpecialists.length, selectedLocation.city_slug, selectedLocation.original]);
 
   const getAutoSuggestions = async (query, isregion) => {
     const params = new URLSearchParams({ q: query, isregion: isregion });
-    const res = await fetch(`http://localhost:8080/api/autocomplete?${params}`);
+    const res = await fetch(`https://practo-clone-9wxf.onrender.com/api/autocomplete?${params}`);
     const data = await res.json();
     if (isregion) {
       setLocationSuggestions(data);
@@ -189,7 +189,7 @@ const Search = () => {
         {isDoctorOpen && (
           <div className="absolute z-100 mt-1 w-full bg-white text-sm  shadow-lg text-gray-700">
             <div className="p-0">
-              <h3 className="text-xs bg-gray-300 py-1 text-left p-2">Common Specialists</h3>
+              <h3 className="text-xs bg-gray-300 py-1 text-left p-2">Suggested Specialists</h3>
               <div className="p-2">
                 {commonSpecialists.map((item) => (
                   <div
