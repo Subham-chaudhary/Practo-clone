@@ -11,8 +11,14 @@ const SearchPage = () => {
     const [parsedResults, setParsedResults] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [loadPage, setLoadPage] = useState(1);
+    const [fetchError, setFetchError] = useState(null);
     const searchParams = useSearchParams();
     const router = useRouter();
+
+    useEffect(() => {
+        setParsedResults(null);
+        setLoadPage(1);
+    }, [searchParams]);
 
     useEffect(() => {
         const city = searchParams.get('region');
@@ -24,53 +30,56 @@ const SearchPage = () => {
         }
 
         const fetchSearchResults = async () => {
-            try {
-                const encodedURL = encodeURIComponent(`https://www.practo.com/marketplace-api/dweb/search/provider/v2?page=${loadPage}&q=[{"word":"${query}","autocompleted":true,"category":"subspeciality"}]&city=${city}`);
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodedURL}`;
-                setIsLoading(true);
-                const res = await fetch(proxyUrl);
+            let attempts = 0;
+            const maxAttempts = 4;
+            setFetchError(null);
 
-                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-                const data = await res.json();
+            while (attempts < maxAttempts) {
+                try {
+                    const encodedURL = encodeURIComponent(`https://www.practo.com/marketplace-api/dweb/search/provider/v2?page=${loadPage}&q=[{"word":"${query}","autocompleted":true,"category":"subspeciality"}]&city=${city}`);
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodedURL}`;
+                    setIsLoading(true);
+                    const res = await fetch(proxyUrl);
 
-                const dataObj = JSON.parse(data.contents);
-                console.log("✅OBJ Data:", dataObj);
-                const parsed = await fetch("http://localhost:8080/api/search/doctors",
-                    {
+                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                    const data = await res.json();
+
+                    const dataObj = JSON.parse(data.contents);
+                    const parsed = await fetch("http://localhost:8080/api/search/doctors", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(dataObj),
-                    }
-                )
-                if (!parsed.ok) throw new Error(`HTTP error! Status: ${parsed.status}`);
-                const parsed_data = await parsed.json();
-                console.log("✅Parsed Data:", parsed_data);
-                if (loadPage !== 1) {
-                    if (parsedResults && parsedResults.doctors) {
-                        //     setParsedResults({
-                        //         ...parsedResults,
-                        //         doctors: [...parsedResults.doctors, ...parsed_data.doctors]
-                        //     });
-                        console.log("load page is not 1");
-                    }
-                } else {
-                    console.log("load page is  1");
-                    setParsedResults(parsed_data);
-                }
-                // setParsedResults(parsed_data);
+                    });
 
-                setIsLoading(false);
-                // setParsedResults(data);
-                // setIsLoading(false);
-            } catch (error) {
-                console.error("❌ Fetch error:", error);
+                    if (!parsed.ok) throw new Error(`HTTP error! Status: ${parsed.status}`);
+                    const parsed_data = await parsed.json();
+
+                    if (loadPage !== 1) {
+                        if (parsedResults && parsedResults.doctors) {
+                            setParsedResults(prev => ({
+                                ...prev,
+                                doctors: { ...prev.doctors, ...parsed_data.doctors }
+                            }));
+                        }
+                    } else {
+                        setParsedResults(parsed_data);
+                    }
+
+                    setIsLoading(false);
+                    return; // Exit loop on success
+                } catch (error) {
+                    attempts++;
+                    console.error(`❌ Fetch attempt ${attempts} failed:`, error);
+                    if (attempts >= maxAttempts) {
+                        setFetchError("Failed to load results after multiple attempts.");
+                        setIsLoading(false);
+                    }
+                }
             }
         };
 
         fetchSearchResults();
-    }, [searchParams, loadPage]);
+    }, [loadPage, searchParams]);
 
 
     return (
@@ -128,8 +137,8 @@ const SearchPage = () => {
 
                     </div>
                 </div>
-                <div className={`h-full p-6 w-full flex flex-col space-y-4 ${isLoading ? "animate-pulse py-32" : ""}`}>
-                    {!isLoading && parsedResults.doctors_found > 0 &&
+                <div className={`h-full p-6 w-full flex flex-col space-y-4 ${isLoading && loadPage === 1 ? "animate-pulse py-32" : ""}`}>
+                    {parsedResults && parsedResults.doctors_found > 0 &&
                         <div>
                             <p className="text-lg font-bold text-left">{parsedResults.guided_prompt}</p>
                             <br />
@@ -199,19 +208,22 @@ const SearchPage = () => {
                             </div>
                         </div>
                     )}
-                    {!isLoading && parsedResults.doctors_found !== Object.values(parsedResults.doctors).length && (
+                    {!isLoading && parsedResults && (
                         <div className="flex items-center justify-center top-1/2">
-                            <p className="text-gray-500">Showing {Object.values(parsedResults.doctors).length }/{parsedResults.doctors_found} result{parsedResults.doctors_found > 1 && "s "}</p>
+                            <p className="text-gray-500">Showing {Object.values(parsedResults.doctors).length}/{parsedResults.doctors_found} result{parsedResults.doctors_found > 1 && "s "}</p>
                         </div>
                     )}
-                    {/* {parsedResults.doctors_found !== Object.values(parsedResults.doctors).length && (
-                        <div className="flex items-center justify-center top-1/2">
-                            <button className="bg-blue-500 text-white py-2 px-5 rounded-lg hover:bg-blue-600 transition-colors w-full" >
+                    {!isLoading && parsedResults && parsedResults.doctors_found > Object.values(parsedResults.doctors).length && (
+                        <div className="flex items-center justify-center mt-4">
+                            <button
+                                className="bg-blue-500 text-white py-2 px-5 rounded-lg hover:bg-blue-600 transition-colors"
+                                onClick={() => setLoadPage(prevPage => prevPage + 1)}
+                            >
                                 Load More
                             </button>
                         </div>
-                    )} */}
-                    {!isLoading && parsedResults.doctors_found === 0 && (
+                    )}
+                    {!isLoading && parsedResults && parsedResults.doctors_found === 0 && (
                         <div className="flex flex-col items-center justify-center top-1/2 h-100">
                             <p className="text-gray-500 text-2xl z-10">No results found.</p>
                             <p className="absolute text-gray-200 text-9xl">{":("}</p>
@@ -219,6 +231,12 @@ const SearchPage = () => {
                         </div>
                     )}
 
+                    {fetchError && (
+                        <div className="flex flex-col items-center justify-center text-center">
+                            <p className="text-red-500 text-2xl">{fetchError}</p>
+                            <p className="text-gray-500 text-lg">Please try refreshing the page or check your connection.</p>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

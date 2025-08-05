@@ -53,7 +53,7 @@ const Search = () => {
       sessionStorage.setItem("selectedDoctor", JSON.stringify(selectedDoctor));
 
       const params = new URLSearchParams({ region: selectedLocation.city_slug, result_type: selectedDoctor.original });
-      router.push(`/search/doctors?${params}`);
+      router.push(`/search/doctors?${params}`, undefined, { shallow: false });
     }
   }, [isLocationSelected, isDoctorSelected, selectedLocation, selectedDoctor, router]);
 
