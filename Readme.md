@@ -108,10 +108,9 @@ The backend server provides the following API endpoints:
 A live demo of the application is available here: [https://practo-clone.vercel.app](https://practo-clone.vercel.app/).
 
 ## Api Endpoints
-
-*   [https://practo-clone.vercel.app/api/autocomplete?q=delhi](https://practo-clone.vercel.app/api/autocomplete?q=delhi)
-*   [https://practo-clone.vercel.app/api/suggestions?city=delhi&query=doctors](https://practo-clone.vercel.app/api/suggestions?city=delhi&query=doctors)
-*   [https://practo-clone.vercel.app/api/search/doctors](https://practo-clone.vercel.app/api/search/doctors)
+*   [https://practo-clone-9wxf.onrender.com/api/autocomplete?q=delhi](https://practo-clone-9wxf.onrender.com/api/autocomplete?q=delhi)
+*   [https://practo-clone-9wxf.onrender.com/api/suggestions?city=delhi&query=doctors](https://practo-clone-9wxf.onrender.com/api/suggestions?city=delhi&query=doctors)
+*   [https://practo-clone-9wxf.onrender.com/api/search/doctors](https://practo-clone-9wxf.onrender.com/api/search/doctors)
 
 ## Development Journey
 
