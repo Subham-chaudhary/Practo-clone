@@ -36,7 +36,7 @@ const Footer = () => {
               />
             ))}
           </div>
-          <div className="text-center flex flex-col items-center  mt-8 border-t border-gray-700 pt-4">
+          <div className="text-center flex flex-col items-center  mt-8 border-t border-gray-700 pt-4 bg-gray-200 text-gray-800">
             <div className="flex left-0  ">
               <Image
                 className="h-20 w-auto"

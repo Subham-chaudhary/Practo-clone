@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/ping")
+@RequestMapping("/")
 public class Ping {
 
-    @GetMapping("")
+    @GetMapping("ping")
     @ResponseStatus(HttpStatus.OK)
     public Map<String, Object> ping() {
         return Map.of("message", "pong", "status", 200);

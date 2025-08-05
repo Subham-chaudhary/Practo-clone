@@ -26,7 +26,7 @@ public class PractoDemoApplication {
                 registry
                 .addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("GET")
+                .allowedMethods("GET", "POST")
                 .allowedHeaders("*");
             }
         };

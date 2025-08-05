@@ -4,7 +4,21 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'via.placeholder.com',
+                hostname: 'imagesx.practo.com',
+                port: '', 
+                pathname: '/**', 
+            },
+
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com',
+                port: '', 
+                pathname: '/**', 
+            },
+
+            {
+                protocol: 'https',
+                hostname: 'images1-fabric.practo.com',
                 port: '', 
                 pathname: '/**', 
             },

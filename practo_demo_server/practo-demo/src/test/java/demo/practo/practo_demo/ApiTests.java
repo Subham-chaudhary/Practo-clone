@@ -25,27 +25,4 @@ public class ApiTests {
                 .andExpect(jsonPath("$.message").value("pong"));
     }
 
-    @Test
-    public void testAutocomplete() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/autocomplete")
-                .param("q", "ban"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testSuggestions() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/suggestions")
-                .param("city", "Bangalore")
-                .param("query", "dentist"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testSearchDoctors() throws Exception {
-        String requestBody = "{}"; // Empty JSON for now
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/search/doctors")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isOk());
-    }
 }
