@@ -14,7 +14,6 @@ const Search = () => {
   const [isDoctorSelected, setDoctorSelected] = useState(false);
   const [commonSpecialists, setCommonSpecialists] = useState([]);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [doctorSuggestions, setDoctorSuggestions] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,7 +23,7 @@ const Search = () => {
     if (sessionLocation) {
       setSelectedLocation(JSON.parse(sessionLocation));
     }
-    else{
+    else {
       setSelectedLocation({
         "suggestion": "Bangalore",
         "weight": 100000,
@@ -131,7 +130,7 @@ const Search = () => {
         </div>
         {isLocationOpen && (
           <div className="absolute z-100 px-1 mt-1 pt-2 bg-white w-full shadow-lg text-sm text-gray-700">
-            <ul>
+            {locationSuggestions.length > 0 ? <div>
               <a className="px-2 py-2 cursor-pointer text-blue-500 underline flex items-center justify-start gap-2"
                 onMouseDown={() => {
                   alert("Feature Not available")
@@ -160,7 +159,7 @@ const Search = () => {
                   <p className="text-xs text-gray-500 align-self-end">{item.display_name}</p>
                 </div>
               ))}
-            </ul>
+            </div> : <div className="p-2">Loading...</div>}
           </div>
         )}
       </div>
@@ -190,27 +189,30 @@ const Search = () => {
           <div className="absolute z-100 mt-1 w-full bg-white text-sm  shadow-lg text-gray-700">
             <div className="p-0">
               <h3 className="text-xs bg-gray-300 py-1 text-left p-2">Suggested Specialists</h3>
-              <div className="p-2">
-                {commonSpecialists.map((item) => (
-                  <div
-                    key={item.original}
-                    className="py-2 cursor-pointer hover:bg-gray-100 flex items-center border-b-1 border-gray-200 justify-between"
-                    onMouseDown={() => {
-                      setSelectedDoctor(item);
-                      setDoctorSelected(true);
-                      document.getElementById("doctor_input").value = item.suggestion;
 
-                    }}
-                  >
-                    <div className="flex items-center">
-                      <FiSearch className="text-gray-400 mx-2" />
-                      {item.suggestion}
+              {commonSpecialists.length > 0 ?
+                <div className="p-2">
+                  {commonSpecialists.map((item) => (
+                    <div
+                      key={item.original}
+                      className="py-2 cursor-pointer hover:bg-gray-100 flex items-center border-b-1 border-gray-200 justify-between"
+                      onMouseDown={() => {
+                        setSelectedDoctor(item);
+                        setDoctorSelected(true);
+                        document.getElementById("doctor_input").value = item.suggestion;
+
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <FiSearch className="text-gray-400 mx-2" />
+                        {item.suggestion}
+                      </div>
+                      <p className="text-xs text-gray-500 align-self-end">{item.display_name}</p>
                     </div>
-                    <p className="text-xs text-gray-500 align-self-end">{item.display_name}</p>
-                  </div>
-                ))}
+                  ))}
 
-              </div>
+                </div> : <div className="p-2">Loading...</div>
+              }
             </div>
           </div>
         )}
